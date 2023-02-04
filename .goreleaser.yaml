@@ -1,0 +1,19 @@
+project_name: 2sub
+builds:
+  - env: [ CGO_ENABLED=0 ]
+    goos: # 编译平台列表 
+      - linux
+      - windows
+      - darwin
+checksum:
+  name_template: 'checksums.txt'
+archives:
+  - replacements:
+      linux: Linux
+      windows: Windows
+      darwin: MacOs
+      386: i386
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
