@@ -8,7 +8,7 @@ on:
     # Pattern matched against refs/tags
     tags:      
       - '*'           # 创建所有tag都运行打包 v* 则 v1.0这种也行
-   workflow_dispatch:
+  workflow_dispatch:
     inputs:
       logLevel:
         description: 'Log level'
