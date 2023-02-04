@@ -1,0 +1,36 @@
+[
+    {
+        "protocol": "vmess",
+        "v": "2",
+        "ps": "备注",
+        "add": "域名",
+        "port": "443",
+        "id": "",
+        "aid": "0",
+        "scy": "auto",
+        "net": "http",
+        "type": "none",
+        "host": "",
+        "path": "",
+        "tls": "tls",
+        "sni": "",
+        "alpn": ""
+    },
+    {
+        "protocol": "vless",
+        "v": "2",
+        "ps": "备注",
+        "add": "域名",
+        "port": "443",
+        "id": "",
+        "aid": "0",
+        "scy": "auto",
+        "net": "grpc",
+        "type": "none",
+        "host": "",
+        "path": "",
+        "tls": "tls",
+        "sni": "",
+        "alpn": ""
+    }
+]
