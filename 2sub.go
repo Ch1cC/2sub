@@ -12,23 +12,24 @@ import (
 )
 
 type node struct {
-	Protocol string `json:"protocol"`
-	V        string `json:"v"`
-	Ps       string `json:"ps"`
-	Add      string `json:"add"`
-	Port     string `json:"port"`
-	ID       string `json:"id"`
-	Aid      string `json:"aid"`
-	Scy      string `json:"scy"`
-	Net      string `json:"net"`
-	Type     string `json:"type"`
-	Host     string `json:"host"`
-	Path     string `json:"path"`
-	TLS      string `json:"tls"`
-	Sni      string `json:"sni"`
-	Alpn     string `json:"alpn"`
-	Udp      int    `json:"udp"`
-	Mux      bool   `json:"mux"`
+	Protocol      string `json:"protocol"`
+	V             string `json:"v"`
+	Ps            string `json:"ps"`
+	Add           string `json:"add"`
+	Port          string `json:"port"`
+	ID            string `json:"id"`
+	Aid           string `json:"aid"`
+	Scy           string `json:"scy"`
+	Net           string `json:"net"`
+	Type          string `json:"type"`
+	Host          string `json:"host"`
+	Path          string `json:"path"`
+	TLS           string `json:"tls"`
+	Sni           string `json:"sni"`
+	Alpn          string `json:"alpn"`
+	Udp           int    `json:"udp"`
+	Mux           bool   `json:"mux"`
+	AllowInsecure bool   `json:"allowInsecure"`
 }
 
 type user struct {
@@ -47,6 +48,7 @@ var (
 func main() {
 	flag.StringVar(&vmessPath, "config", "vmess模板.json", "节点模板json文件路径")
 	flag.StringVar(&userPath, "user", "user模板.json", "user模板json文件路径")
+	flag.Parse()
 	/*vmessPath := ""
 	if len(os.Args) < 2 {
 		fmt.Println("请输入文件路径")
@@ -120,8 +122,8 @@ func toVless(n node) (base64Url string) {
 }
 
 func toVmess(n node) (base64Url string) {
-	if n.Net=="grpc"{
-		n.Type="gun"
+	if n.Net == "grpc" {
+		n.Type = "gun"
 	}
 	json, _ := json.Marshal(n)
 	vmess := string(json)

@@ -1,4 +1,5 @@
-project_name: 2sub
+env:
+  - GO111MODULE=on
 builds:
   - env: [ CGO_ENABLED=0 ]
     goos: # 编译平台列表 
@@ -17,3 +18,6 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    builds_info:
+      group: root
+      owner: root
