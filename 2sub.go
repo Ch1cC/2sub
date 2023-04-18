@@ -92,7 +92,7 @@ func main() {
 		builder := urlBuilder.String()
 		//最后再base64一次符合小火箭订阅格式
 		toString := base64.StdEncoding.EncodeToString([]byte(builder))
-		os.WriteFile("sub/"+email, []byte(toString), 0644)
+		os.WriteFile("sub/"+email, []byte(toString), 0555)
 	}
 	/*fmt.Println(toString)
 	clipboard.WriteAll(toString)
