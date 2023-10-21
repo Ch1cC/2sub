@@ -9,19 +9,13 @@ builds:
 checksum:
   name_template: "checksums.txt"
 archives:
-  - replacements:
-      linux: linux
-      windows: windows
-      darwin: darwin
-      386: i386
-      amd64: x86_64
-    format_overrides:
+  - format_overrides:
       - goos: windows
         format: zip
       - goos: linux
         format: zip
       - goos: darwin
         format: zip
-    builds_info:
+  - builds_info:
       group: root
       owner: root
