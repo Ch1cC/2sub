@@ -1,13 +1,13 @@
 env:
   - GO111MODULE=on
 builds:
-  - env: [ CGO_ENABLED=0 ]
-    goos: # 编译平台列表 
+  - env: [CGO_ENABLED=0]
+    goos: # 编译平台列表
       - linux
       - windows
       - darwin
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 archives:
   - replacements:
       linux: linux
