@@ -1,5 +1,6 @@
 [
     {
+        "hiden": true,
         "protocol": "vmess",
         "v": "2",
         "ps": "备注",
@@ -13,10 +14,11 @@
         "host": "",
         "path": "",
         "tls": "tls",
-        "sni": "",
+        "sni": "123",
         "alpn": ""
     },
     {
+        "hiden": false,
         "protocol": "vless",
         "v": "2",
         "ps": "备注",
@@ -30,7 +32,7 @@
         "host": "",
         "path": "",
         "tls": "tls",
-        "sni": "",
+        "sni": "123",
         "alpn": ""
     }
 ]

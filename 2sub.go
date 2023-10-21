@@ -12,6 +12,7 @@ import (
 )
 
 type node struct {
+	Hiden         bool   `json:"hiden"`
 	Protocol      string `json:"protocol"`
 	V             string `json:"v"`
 	Ps            string `json:"ps"`
@@ -123,19 +124,28 @@ func toVless(n node) (base64Url string) {
 }
 
 func toVmess(n node) (base64Url string) {
+	// 如果n的网络为grpc
 	if n.Net == "grpc" {
+		// 将n的类型设置为gun
 		n.Type = "gun"
 	}
+	// 将n转换为json格式
 	json, _ := json.Marshal(n)
+	// 将json格式转换为base64Url格式
 	vmess := string(json)
+	// 返回vmess协议+base64Url格式的字符串
 	return vmessProtocol + base64.StdEncoding.EncodeToString([]byte(vmess))
 }
 
 func formatNodes() []node {
+	//创建一个空的节点数组
 	vmessArr := make([]node, 0)
+	//读取json文件
 	vmess, _ := readJSON(vmessPath)
 	//获取json数组
+	//将json数组解析为节点数组
 	JSONArr := json.Unmarshal(vmess, &vmessArr)
+	//如果解析出错，则打印错误信息，并退出
 	if JSONArr != nil {
 		fmt.Println("节点模板.json is error")
 		fmt.Println("回车退出")
@@ -143,6 +153,14 @@ func formatNodes() []node {
 		os.Stdin.Read(b)
 		panic(JSONArr)
 	}
+	//移除vmessArr中hiden为true的
+	for i, item := range vmessArr {
+		if item.Hiden {
+			vmessArr = append(vmessArr[:i], vmessArr[i+1:]...)
+		}
+	}
+	fmt.Println(vmessArr)
+	//返回节点数组
 	return vmessArr
 }
 
@@ -150,14 +168,19 @@ func formatUser() []user {
 	//获取json数组
 	userArr := make([]user, 0)
 	user, _ := readJSON(userPath)
+	//将json数组解析为userArr
 	JSONArr := json.Unmarshal(user, &userArr)
+	//如果解析失败
 	if JSONArr != nil {
 		fmt.Println("user模板.json is error")
 		fmt.Println("回车退出")
 		b := make([]byte, 1)
+		//读取回车
 		os.Stdin.Read(b)
+		//抛出异常
 		panic(JSONArr)
 	}
+	//返回userArr
 	return userArr
 }
 func readJSON(path string) ([]byte, error) {
@@ -166,17 +189,21 @@ func readJSON(path string) ([]byte, error) {
 	return io.ReadAll(open)
 }
 
-//判断文件文件夹是否存在
+// 判断文件文件夹是否存在
 func isFileExist(path string) (bool, error) {
+	//获取文件信息
 	fileInfo, err := os.Stat(path)
 
+	//如果文件不存在
 	if os.IsNotExist(err) {
 		return false, nil
 	}
 	//我这里判断了如果是0也算不存在
+	//如果文件大小为0
 	if fileInfo.Size() == 0 {
 		return false, nil
 	}
+	//如果文件存在
 	if err == nil {
 		return true, nil
 	}
