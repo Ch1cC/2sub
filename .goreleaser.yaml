@@ -9,13 +9,13 @@ builds:
 checksum:
   name_template: "checksums.txt"
 archives:
-  format_overrides:
-    - goos: windows
-      format: zip
-    - goos: linux
-      format: zip
-    - goos: darwin
-      format: zip
-  builds_info:
-    group: root
-    owner: root
+  - format_overrides:
+      - goos: windows
+        format: zip
+      - goos: linux
+        format: zip
+      - goos: darwin
+        format: zip
+  - builds_info:
+      group: root
+      owner: root
