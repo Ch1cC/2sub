@@ -2,3 +2,4 @@ vmessSub.iml
 .idea
 sub
 bin
+.goreleaser.yml
