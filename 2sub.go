@@ -99,7 +99,11 @@ func main() {
 	/*fmt.Println(toString)
 	clipboard.WriteAll(toString)
 	fmt.Println("已复制到剪切板")*/
-	fmt.Printf("文件写入到sub文件夹共%d位用户\n", len(users))
+	if len(nodes) > 0 {
+		fmt.Printf("文件写入到sub文件夹共%d位用户\n", len(users))
+	} else {
+		fmt.Println("未找到有效节点")
+	}
 	// fmt.Println("回车退出")
 	// b := make([]byte, 1)
 	// os.Stdin.Read(b)
@@ -139,12 +143,13 @@ func toVmess(n node) (base64Url string) {
 
 func formatNodes() []node {
 	//创建一个空的节点数组
+	tempArr := make([]node, 0)
 	vmessArr := make([]node, 0)
 	//读取json文件
 	vmess, _ := readJSON(vmessPath)
 	//获取json数组
 	//将json数组解析为节点数组
-	JSONArr := json.Unmarshal(vmess, &vmessArr)
+	JSONArr := json.Unmarshal(vmess, &tempArr)
 	//如果解析出错，则打印错误信息，并退出
 	if JSONArr != nil {
 		fmt.Println("节点模板.json is error")
@@ -153,13 +158,13 @@ func formatNodes() []node {
 		os.Stdin.Read(b)
 		panic(JSONArr)
 	}
-	//移除vmessArr中hiden为true的
-	for i, item := range vmessArr {
-		if item.Hiden {
-			vmessArr = append(vmessArr[:i], vmessArr[i+1:]...)
+	//移除tempArr中hiden为true的
+	for _, item := range tempArr {
+		if !item.Hiden {
+			vmessArr = append(vmessArr, item)
 		}
 	}
-	fmt.Println(vmessArr)
+	// fmt.Println(vmessArr)
 	//返回节点数组
 	return vmessArr
 }
