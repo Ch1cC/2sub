@@ -1,7 +1,8 @@
 [
     {
-    "id": "uuid",
-    "email": "us@us.com",
-    "level": 0
-  }
+        "id": "uuid",
+        "email": "us@us.com",
+        "level": 0,
+        "name": "我我我"
+    }
 ]

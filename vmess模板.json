@@ -1,6 +1,6 @@
 [
     {
-        "hiden": true,
+        "hiden": false,
         "protocol": "vmess",
         "v": "2",
         "ps": "备注",
@@ -18,7 +18,7 @@
         "alpn": ""
     },
     {
-        "hiden": true,
+        "hiden": false,
         "protocol": "vless",
         "v": "2",
         "ps": "备注",

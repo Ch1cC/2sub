@@ -36,6 +36,7 @@ type node struct {
 type user struct {
 	ID    string `json:"id"`
 	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 var (
@@ -69,6 +70,9 @@ func main() {
 		urlBuilder := strings.Builder{}
 		UUID := user.ID
 		email := user.Email
+		if len(user.Name) > 0 {
+			email = user.Name
+		}
 		for _, node := range nodes {
 			node.ID = UUID
 			protocol := node.Protocol
@@ -158,7 +162,7 @@ func formatNodes() []node {
 		os.Stdin.Read(b)
 		panic(JSONArr)
 	}
-	//移除tempArr中hiden为true的
+	//移除tempArr中hidden为true的
 	for _, item := range tempArr {
 		if !item.Hiden {
 			vmessArr = append(vmessArr, item)
