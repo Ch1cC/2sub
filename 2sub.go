@@ -48,7 +48,7 @@ var (
 )
 
 func main() {
-	flag.StringVar(&vmessPath, "config", "vmess模板.json", "节点模板json文件路径")
+	flag.StringVar(&vmessPath, "config", "node模板.json", "node模板json文件路径")
 	flag.StringVar(&userPath, "user", "user模板.json", "user模板json文件路径")
 	flag.Parse()
 	/*vmessPath := ""
@@ -156,7 +156,7 @@ func formatNodes() []node {
 	JSONArr := json.Unmarshal(vmess, &tempArr)
 	//如果解析出错，则打印错误信息，并退出
 	if JSONArr != nil {
-		fmt.Println("节点模板.json is error")
+		fmt.Println("node模板.json is error")
 		fmt.Println("回车退出")
 		b := make([]byte, 1)
 		os.Stdin.Read(b)
