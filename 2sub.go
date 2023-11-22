@@ -60,10 +60,17 @@ func main() {
 		vmessPath = os.Args[1]
 		fmt.Println("读取路径:", vmessPath)
 	}*/
+	//判断文件夹是否存在
+	if fileInfo, _ := os.Stat("sub"); fileInfo != nil {
+		if fileInfo.IsDir() {
+			fmt.Println("sub文件夹存在,任意键将删除")
+			fmt.Scanln()
+			os.RemoveAll("sub")
+			os.Mkdir("sub", 0555)
+		}
+	}
 	nodes := formatNodes()
 	users := formatUser()
-	os.RemoveAll("sub")
-	os.Mkdir("sub", 0555)
 	//循环vmess,user对象
 	for _, user := range users {
 		//字符串拼接
