@@ -1,6 +1,6 @@
 [
     {
-        "hiden": false,
+        "hiden": true,
         "protocol": "vmess",
         "v": "2",
         "ps": "备注",
@@ -18,7 +18,7 @@
         "alpn": ""
     },
     {
-        "hiden": false,
+        "hiden": true,
         "protocol": "vless",
         "v": "2",
         "ps": "备注",
@@ -34,5 +34,26 @@
         "tls": "tls",
         "sni": "123",
         "alpn": ""
+    },
+    {
+        "hiden": false,
+        "protocol": "hysteria2",
+        "v": "2",
+        "ps": "洛杉矶-2",
+        "add": "89.213.182.8",
+        "port": "853",
+        "id": "",
+        "aid": "0",
+        "scy": "auto",
+        "net": "grpc",
+        "type": "none",
+        "host": "alist.ch1cc.com",
+        "path": "t1TYX5AlqfGLygzW",
+        "tls": "tls",
+        "sni": "",
+        "alpn": "h2,http/1.1",
+        "udp": 0,
+        "allowInsecure": false,
+        "mux": false
     }
 ]
