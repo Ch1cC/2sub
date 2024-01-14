@@ -3,11 +3,11 @@
 
 name: Release
 on:
-  pull_request:
-  # push:
-  # Pattern matched against refs/tags
-  # tags:
-  # - "*"
+  # pull_request:
+  push:
+    # Pattern matched against refs/tags
+    tags:
+      - "*"
   # workflow_dispatch:
   #   inputs:
   #     logLevel:

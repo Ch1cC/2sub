@@ -15,3 +15,9 @@ archives:
   - format_overrides:
       - goos: windows
         format: zip
+    files:
+      # - LICENSE.txt
+      - README.md
+      # - CHANGELOG.md
+      - node模板.json
+      - user模板.json
