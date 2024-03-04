@@ -21,7 +21,7 @@
         "hiden": false,
         "protocol": "vless",
         "v": "2",
-        "ps": "备注",
+        // "ps": "备注",
         "add": "域名",
         "port": "443",
         "id": "",

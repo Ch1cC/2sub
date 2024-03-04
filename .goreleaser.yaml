@@ -21,3 +21,5 @@ archives:
       # - CHANGELOG.md
       - node模板.json
       - user模板.json
+release:
+  target_commitish: "{{ .Commit }}"

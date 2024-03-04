@@ -9,6 +9,8 @@ import (
 	url2 "net/url"
 	"os"
 	"strings"
+
+	"github.com/DisposaBoy/JsonConfigReader"
 )
 
 type node struct {
@@ -40,25 +42,26 @@ type user struct {
 }
 
 var (
-	vmessProtocol  = "vmess://"
-	trojanProtocol = "trojan://"
-	vlessProtocol  = "vless://"
-	vmessPath      string
-	userPath       string
+	vmessProtocol     = "vmess://"
+	trojanProtocol    = "trojan://"
+	vlessProtocol     = "vless://"
+	hysteria2Protocol = "hysteria2://"
+	nodePath          string
+	userPath          string
 )
 
 func main() {
-	flag.StringVar(&vmessPath, "config", "node模板.json", "node模板json文件路径")
+	flag.StringVar(&nodePath, "config", "node模板.json", "node模板json文件路径")
 	flag.StringVar(&userPath, "user", "user模板.json", "user模板json文件路径")
 	flag.Parse()
-	/*vmessPath := ""
+	/*nodePath := ""
 	if len(os.Args) < 2 {
 		fmt.Println("请输入文件路径")
 		fmt.Scanln(&path)
-		vmessPath = path
+		nodePath = path
 	} else {
-		vmessPath = os.Args[1]
-		fmt.Println("读取路径:", vmessPath)
+		nodePath = os.Args[1]
+		fmt.Println("读取路径:", nodePath)
 	}*/
 	//判断文件夹是否存在
 	if fileInfo, _ := os.Stat("sub"); fileInfo != nil {
@@ -77,9 +80,6 @@ func main() {
 		urlBuilder := strings.Builder{}
 		UUID := user.ID
 		email := user.Email
-		if len(user.Name) > 0 {
-			email = user.Name
-		}
 		for _, node := range nodes {
 			node.ID = UUID
 			protocol := node.Protocol
@@ -88,6 +88,10 @@ func main() {
 			switch protocol {
 			case "trojan":
 				base64Url := toTrojan(node)
+				urlBuilder.WriteString(base64Url)
+				urlBuilder.WriteString("\r")
+			case "hysteria2":
+				base64Url := toHysteria2(node, email)
 				urlBuilder.WriteString(base64Url)
 				urlBuilder.WriteString("\r")
 			case "vmess":
@@ -101,6 +105,10 @@ func main() {
 				urlBuilder.WriteString(base64Url)
 				urlBuilder.WriteString("\r")
 			}
+		}
+		//别名
+		if len(user.Name) > 0 {
+			email = user.Name
 		}
 		builder := urlBuilder.String()
 		//最后再base64一次符合小火箭订阅格式
@@ -120,11 +128,15 @@ func main() {
 	// os.Stdin.Read(b)
 }
 func toTrojan(n node) (base64Url string) {
-	url := trojanProtocol + n.ID + "@" + n.Add + ":" + n.Port + "?security=tls&alpn=h2%2Chttp%2F1.1&type=tcp&headerType=none#" + url2.QueryEscape(n.Ps)
+	url := trojanProtocol + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?security=tls&alpn=h2%2Chttp%2F1.1&type=tcp&headerType=none#" + url2.QueryEscape(n.Ps)
+	return url
+}
+func toHysteria2(n node, email string) (base64Url string) {
+	url := hysteria2Protocol + email + ":" + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?sni=" + n.Host + "&alpn=h3&upmbps=50&downmbps=100#" + url2.QueryEscape(n.Ps)
 	return url
 }
 func toVless(n node) (base64Url string) {
-	url := vlessProtocol + n.ID + "@" + n.Add + ":" + n.Port + "?encryption=none&security=tls&alpn=h2%2Chttp%2F1.1&" + "type=" + n.Net
+	url := vlessProtocol + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?encryption=none&security=tls&alpn=h2%2Chttp%2F1.1&" + "type=" + n.Net
 	if n.Net == "grpc" {
 		url = url + "&mode=gun&serviceName=" + n.Path
 	} else if n.Net == "tcp" {
@@ -157,7 +169,7 @@ func formatNodes() []node {
 	tempArr := make([]node, 0)
 	vmessArr := make([]node, 0)
 	//读取json文件
-	vmess, _ := readJSON(vmessPath)
+	vmess, _ := readJSON(nodePath)
 	//获取json数组
 	//将json数组解析为节点数组
 	JSONArr := json.Unmarshal(vmess, &tempArr)
@@ -202,7 +214,7 @@ func formatUser() []user {
 func readJSON(path string) ([]byte, error) {
 	open, _ := os.Open(path)
 	defer open.Close()
-	return io.ReadAll(open)
+	return io.ReadAll(JsonConfigReader.New(open))
 }
 
 // 判断文件文件夹是否存在
