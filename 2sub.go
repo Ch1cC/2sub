@@ -36,9 +36,10 @@ type node struct {
 }
 
 type user struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	ID       string   `json:"id"`
+	Email    string   `json:"email"`
+	Name     string   `json:"name"`
+	Protocol []string `json:"protocol"`
 }
 
 var (
@@ -91,9 +92,13 @@ func main() {
 				urlBuilder.WriteString(base64Url)
 				urlBuilder.WriteString("\r")
 			case "hysteria2":
-				base64Url := toHysteria2(node, email)
-				urlBuilder.WriteString(base64Url)
-				urlBuilder.WriteString("\r")
+				for _, item := range user.Protocol {
+					if item == "hysteria2" {
+						base64Url := toHysteria2(node, email)
+						urlBuilder.WriteString(base64Url)
+						urlBuilder.WriteString("\r")
+					}
+				}
 			case "vmess":
 				// fmt.Println(vmess)
 				base64Url := toVmess(node)
