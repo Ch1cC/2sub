@@ -137,7 +137,7 @@ func toTrojan(n node) (base64Url string) {
 	return url
 }
 func toHysteria2(n node, email string) (base64Url string) {
-	url := hysteria2Protocol + email + ":" + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?sni=" + n.Host + "&alpn=h3&upmbps=50&downmbps=100#" + url2.QueryEscape(n.Ps)
+	url := hysteria2Protocol + email + ":" + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?sni=" + n.Host + "&alpn=h3&upmbps=500&downmbps=500#" + url2.QueryEscape(n.Ps)
 	return url
 }
 func toVless(n node) (base64Url string) {
