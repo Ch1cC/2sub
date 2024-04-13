@@ -33,6 +33,7 @@ type node struct {
 	Udp           int    `json:"udp"`
 	Mux           bool   `json:"mux"`
 	AllowInsecure bool   `json:"allowInsecure"`
+	Tfo           bool   `json:"tfo"`
 }
 
 type user struct {
@@ -83,32 +84,29 @@ func main() {
 		email := user.Email
 		for _, node := range nodes {
 			node.ID = UUID
-			protocol := node.Protocol
 			node.Alpn = "h2,http/1.1"
-			//每个对象都进行base64转换
-			switch protocol {
-			case "trojan":
-				base64Url := toTrojan(node)
-				urlBuilder.WriteString(base64Url)
-				urlBuilder.WriteString("\r")
-			case "hysteria2":
-				for _, item := range user.Protocol {
-					if item == "hysteria2" {
+			for _, item := range user.Protocol {
+				if node.Protocol == item {
+					switch item {
+					case "trojan":
+						base64Url := toTrojan(node)
+						urlBuilder.WriteString(base64Url)
+						urlBuilder.WriteString("\r")
+					case "hysteria2":
 						base64Url := toHysteria2(node, email)
+						urlBuilder.WriteString(base64Url)
+						urlBuilder.WriteString("\r")
+					case "vmess":
+						base64Url := toVmess(node)
+						urlBuilder.WriteString(base64Url)
+						urlBuilder.Cap()
+						urlBuilder.WriteString("\r")
+					case "vless":
+						base64Url := toVless(node)
 						urlBuilder.WriteString(base64Url)
 						urlBuilder.WriteString("\r")
 					}
 				}
-			case "vmess":
-				// fmt.Println(vmess)
-				base64Url := toVmess(node)
-				urlBuilder.WriteString(base64Url)
-				urlBuilder.Cap()
-				urlBuilder.WriteString("\r")
-			case "vless":
-				base64Url := toVless(node)
-				urlBuilder.WriteString(base64Url)
-				urlBuilder.WriteString("\r")
 			}
 		}
 		//别名
@@ -137,7 +135,7 @@ func toTrojan(n node) (base64Url string) {
 	return url
 }
 func toHysteria2(n node, email string) (base64Url string) {
-	url := hysteria2Protocol + email + ":" + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?sni=" + n.Host + "&alpn=h3&upmbps=500&downmbps=500#" + url2.QueryEscape(n.Ps)
+	url := hysteria2Protocol + email + ":" + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?sni=" + n.Host + "&alpn=h3&upmbps=300&downmbps=300#" + url2.QueryEscape(n.Ps)
 	return url
 }
 func toVless(n node) (base64Url string) {
@@ -212,6 +210,11 @@ func formatUser() []user {
 		os.Stdin.Read(b)
 		//抛出异常
 		panic(JSONArr)
+	}
+	for i, u := range userArr {
+		if u.Protocol == nil {
+			userArr[i].Protocol = []string{"vmess", "trojan"}
+		}
 	}
 	//返回userArr
 	return userArr
