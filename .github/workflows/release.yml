@@ -3,61 +3,42 @@
 
 name: Release
 on:
-  # pull_request:
-  push:
-    # Pattern matched against refs/tags
-    tags:
-      - "*"
-  # workflow_dispatch:
-  #   inputs:
-  #     logLevel:
-  #       description: "Log level"
-  #       required: false
-  #       default: "warning"
-  #       type: choice
-  #       options:
-  #         - info
-  #         - warning
-  #         - debug
-  #     tags:
-  #       description: "Test scenario tags"
-  #       required: false
-  #       type: boolean
-  #     environment:
-  #       description: "Environment to run tests against"
-  #       type: environment
-  #       required: false
-
+    push:
+        tags:
+            - "*"
 permissions:
-  contents: write
+    contents: write
+    packages: write
 
 jobs:
-  goreleaser:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up Go
-        uses: actions/setup-go@v4
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
-        with:
-          # either 'goreleaser' (default) or 'goreleaser-pro'
-          distribution: goreleaser
-          version: latest
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Your GoReleaser Pro key, if you are using the 'goreleaser-pro' distribution
-          # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
-      - name: Delete releases and workflows runs
-        uses: ophub/delete-releases-workflows@v0.1.0
-        with:
-          delete_releases: true
-          releases_keep_latest: 1
-          delete_workflows: true
-          delete_tags: true
-          workflows_keep_day: 10
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Set up Go
+              uses: actions/setup-go@v4
+
+            - name: Run GoReleaser
+              uses: goreleaser/goreleaser-action@v5
+              with:
+                  # either 'goreleaser' (default) or 'goreleaser-pro'
+                  distribution: goreleaser
+                  version: latest
+                  args: release --clean
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # Your GoReleaser Pro key, if you are using the 'goreleaser-pro' distribution
+                  # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+            - name: Delete releases and workflows runs
+              uses: ophub/delete-releases-workflows@v0.1.0
+              with:
+                  delete_releases: true
+                  releases_keep_latest: 1
+                  delete_workflows: true
+                  delete_tags: false
+                  workflows_keep_day: 10
+                  gh_token: ${{ secrets.GITHUB_TOKEN }}
