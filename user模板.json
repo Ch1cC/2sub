@@ -4,6 +4,6 @@
         "email": "us@us.com",
         "level": 0,
         "name": "我我我",
-        "protocol": ["vmess", "trojan", "hysteria2"]
+        "exclude": "hysteria2"
     }
 ]

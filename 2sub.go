@@ -11,10 +11,11 @@ import (
 	"strings"
 
 	"github.com/DisposaBoy/JsonConfigReader"
+	"github.com/dlclark/regexp2"
 )
 
 type node struct {
-	Hiden         bool   `json:"hiden"`
+	Hidden        bool   `json:"hidden"`
 	Protocol      string `json:"protocol"`
 	V             string `json:"v"`
 	Ps            string `json:"ps"`
@@ -37,10 +38,11 @@ type node struct {
 }
 
 type user struct {
-	ID       string   `json:"id"`
-	Email    string   `json:"email"`
-	Name     string   `json:"name"`
-	Protocol []string `json:"protocol"`
+	ID               string `json:"id"`
+	Email            string `json:"email"`
+	Name             string `json:"name"`
+	Exclude          string `json:"exclude"`
+	excludeFilterReg *regexp2.Regexp
 }
 
 var (
@@ -83,30 +85,31 @@ func main() {
 		UUID := user.ID
 		email := user.Email
 		for _, node := range nodes {
+			match1, _ := user.excludeFilterReg.MatchString(node.Protocol)
+			match2, _ := user.excludeFilterReg.MatchString(node.Ps)
+			if match1 || match2 {
+				continue
+			}
 			node.ID = UUID
 			node.Alpn = "h2,http/1.1"
-			for _, item := range user.Protocol {
-				if node.Protocol == item {
-					switch item {
-					case "trojan":
-						base64Url := toTrojan(node)
-						urlBuilder.WriteString(base64Url)
-						urlBuilder.WriteString("\r")
-					case "hysteria2":
-						base64Url := toHysteria2(node, email)
-						urlBuilder.WriteString(base64Url)
-						urlBuilder.WriteString("\r")
-					case "vmess":
-						base64Url := toVmess(node)
-						urlBuilder.WriteString(base64Url)
-						urlBuilder.Cap()
-						urlBuilder.WriteString("\r")
-					case "vless":
-						base64Url := toVless(node)
-						urlBuilder.WriteString(base64Url)
-						urlBuilder.WriteString("\r")
-					}
-				}
+			switch node.Protocol {
+			case "trojan":
+				base64Url := toTrojan(node)
+				urlBuilder.WriteString(base64Url)
+				urlBuilder.WriteString("\r")
+			case "hysteria2":
+				base64Url := toHysteria2(node, email)
+				urlBuilder.WriteString(base64Url)
+				urlBuilder.WriteString("\r")
+			case "vmess":
+				base64Url := toVmess(node)
+				urlBuilder.WriteString(base64Url)
+				urlBuilder.Cap()
+				urlBuilder.WriteString("\r")
+			case "vless":
+				base64Url := toVless(node)
+				urlBuilder.WriteString(base64Url)
+				urlBuilder.WriteString("\r")
 			}
 		}
 		//别名
@@ -131,15 +134,15 @@ func main() {
 	// os.Stdin.Read(b)
 }
 func toTrojan(n node) (base64Url string) {
-	url := trojanProtocol + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?security=tls&alpn=h2%2Chttp%2F1.1&type=tcp&headerType=none#" + url2.QueryEscape(n.Ps)
+	url := trojanProtocol + url2.PathEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?security=tls&alpn=h2%2Chttp%2F1.1&type=tcp&headerType=none#" + url2.PathEscape(n.Ps)
 	return url
 }
 func toHysteria2(n node, email string) (base64Url string) {
-	url := hysteria2Protocol + email + ":" + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?sni=" + n.Host + "&alpn=h3&upmbps=300&downmbps=300#" + url2.QueryEscape(n.Ps)
+	url := hysteria2Protocol + email + ":" + url2.PathEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?sni=" + n.Host + "&alpn=h3&up=300&down=300&upmbps=300&downmbps=300#" + url2.PathEscape(n.Ps)
 	return url
 }
 func toVless(n node) (base64Url string) {
-	url := vlessProtocol + url2.QueryEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?encryption=none&security=tls&alpn=h2%2Chttp%2F1.1&" + "type=" + n.Net
+	url := vlessProtocol + url2.PathEscape(n.ID) + "@" + n.Add + ":" + n.Port + "?encryption=none&security=tls&alpn=h2%2Chttp%2F1.1&" + "type=" + n.Net
 	if n.Net == "grpc" {
 		url = url + "&mode=gun&serviceName=" + n.Path
 	} else if n.Net == "tcp" {
@@ -149,7 +152,7 @@ func toVless(n node) (base64Url string) {
 			url = url + "&path=%2F" + n.Path
 		}
 	}
-	url = url + "#" + url2.QueryEscape(n.Ps)
+	url = url + "#" + url2.PathEscape(n.Ps)
 	return url
 }
 
@@ -186,7 +189,7 @@ func formatNodes() []node {
 	}
 	//移除tempArr中hidden为true的
 	for _, item := range tempArr {
-		if !item.Hiden {
+		if !item.Hidden {
 			vmessArr = append(vmessArr, item)
 		}
 	}
@@ -212,9 +215,10 @@ func formatUser() []user {
 		panic(JSONArr)
 	}
 	for i, u := range userArr {
-		if u.Protocol == nil {
-			userArr[i].Protocol = []string{"vmess", "trojan"}
+		if u.Exclude == "" {
+			userArr[i].Exclude = "hysteria2"
 		}
+		userArr[i].excludeFilterReg = regexp2.MustCompile(userArr[i].Exclude, regexp2.None)
 	}
 	//返回userArr
 	return userArr
